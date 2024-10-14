@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "libgen-onix-drop",
+  "version": "0.0.1",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://library.bz/main/uploads/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
