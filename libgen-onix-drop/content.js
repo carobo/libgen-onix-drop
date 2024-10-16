@@ -1,18 +1,20 @@
 const form = document.querySelector('form');
-const uploadOnixButton = document.createElement('input');
-uploadOnixButton.type = 'file';
-uploadOnixButton.addEventListener('change', function (event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const xmlContent = e.target.result;
-            parseONIX(xmlContent);
-        };
-        reader.readAsText(file);
-    }
-});
-form.insertAdjacentElement('afterbegin', uploadOnixButton);
+if (form) {
+    const uploadOnixButton = document.createElement('input');
+    uploadOnixButton.type = 'file';
+    uploadOnixButton.addEventListener('change', function (event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const xmlContent = e.target.result;
+                parseONIX(xmlContent);
+            };
+            reader.readAsText(file);
+        }
+    });
+    form.insertAdjacentElement('afterbegin', uploadOnixButton);
+}
 
 function csv(elements) {
     const elemArray = Array.from(elements);
@@ -27,8 +29,11 @@ function parseONIX(xmlContent) {
     document.querySelector('input[name=title]').value = csv(xmlDoc.getElementsByTagName("b203"));
     document.querySelector('input[name=authors]').value = csv(xmlDoc.getElementsByTagName("b036"));
 
-    let languageNames = new Intl.DisplayNames(['en'], {type: 'language'});
-    document.querySelector('input[name=language]').value = languageNames.of(xmlDoc.getElementsByTagName("b252")[0].textContent);
+    const langNode = xmlDoc.getElementsByTagName("b252")[0];
+    if (langNode) {
+        let languageNames = new Intl.DisplayNames(['en'], {type: 'language'});
+        document.querySelector('input[name=language]').value = languageNames.of(langNode.textContent);
+    }
 
     document.querySelector('input[name=edition]').value = csv(xmlDoc.getElementsByTagName("b057"));
     document.querySelector('input[name=pages]').value = csv(xmlDoc.getElementsByTagName("b061"));
