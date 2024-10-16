@@ -37,8 +37,12 @@ function parseONIX(xmlContent) {
 
     document.querySelector('input[name=edition]').value = csv(xmlDoc.getElementsByTagName("b057"));
     document.querySelector('input[name=pages]').value = csv(xmlDoc.getElementsByTagName("b061"));
-    document.querySelector('input[name=year]').value = xmlDoc.getElementsByTagName("b003")[0].textContent.substring(0, 4);
     document.querySelector('input[name=publisher]').value = csv(xmlDoc.getElementsByTagName("b081"));
+
+    const yearNode = xmlDoc.getElementsByTagName("b003")[0];
+    if (yearNode) {
+        document.querySelector('input[name=year]').value = yearNode.textContent.substring(0, 4);
+    }
 
     const isbnInput = document.querySelector('input[name=isbn]');
     let isbns = new Set(isbnInput.value.split(', '));
