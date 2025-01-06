@@ -21,6 +21,31 @@ function csv(elements) {
     return elemArray.map(e => e.textContent).join(', ');
 }
 
+function getISBNs(xmlDoc) {
+    const allowedTypes = ['ISBN-10', 'ISBN-13', '02', '15'];
+
+    const productIdentifiers = Array.from(xmlDoc.querySelectorAll('productidentifier'));
+    const result = new Set();
+
+    productIdentifiers.forEach(productIdentifier => {
+        const b221 = productIdentifier.querySelector('b221');
+        const b244 = productIdentifier.querySelector('b244');
+
+        if (b221 != null && b244 != null) {
+            const types = b221.textContent.split(',');
+            const identifiers = b244.textContent.split(',');
+
+            // Filter the identifiers based on the corresponding types
+            identifiers.forEach((identifier, index) => {
+                if (allowedTypes.includes(types[index])) {
+                    result.add(identifier);
+                }
+            });
+        }
+    });
+    return result;
+}
+
 function parseONIX(xmlContent) {
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlContent, "application/xml");
@@ -46,6 +71,6 @@ function parseONIX(xmlContent) {
 
     const isbnInput = document.querySelector('input[name=isbn]');
     let isbns = new Set(isbnInput.value.split(', '));
-    isbns = isbns.union(new Set(xmlDoc.getElementsByTagName("b244")[0].textContent.split(',')));
+    isbns = isbns.union(getISBNs(xmlDoc));
     isbnInput.value = Array.from(isbns).join(', ');
 }
